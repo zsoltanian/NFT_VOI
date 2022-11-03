@@ -1,0 +1,308 @@
+
+@mixin glass {
+  background: linear-gradient(270.08deg, rgba(12, 40, 53, 0.77) 0.05%, rgba(7, 44, 62, 0.34) 102.35%);
+  backdrop-filter: blur(4px) saturate(120%);
+}
+
+@mixin thin-text {
+  font-weight: 200;
+}
+@mixin lighter-text {
+  font-weight: 300;
+}
+@mixin light-text {
+  font-weight: 400;
+}
+@mixin normal-text {
+  font-weight: 500;
+}
+@mixin bold-text {
+  font-weight: 600;
+}
+@mixin bolder-text {
+  font-weight: 700;
+}
+@mixin random-bgr(){
+  background: rgb(random(255), random(255), random(255));
+}
+@mixin fade-bottom($color: $background-color, $height : 40%) {
+  bottom: 0;
+  @include pseudo;
+  width: 100%;
+  height: $height;
+  background: linear-gradient(180deg, rgba($color, 0) 0%, rgba($color, 1) 100%);
+}
+@mixin fade-top($color: $background-color, $height : 30%) {
+  top: 0;
+  @include pseudo;
+  width: 100%;
+  height: $height;
+  background: linear-gradient(360deg, rgba($color, 0) 0%, rgba($color, 1) 100%);
+}
+@mixin dark-light($color: rgba(0, 255, 209, 0.67)) {
+  $random-delay: random(2000) + ms;
+  background: $color;
+  filter: blur(80px);
+  //animation: 6000ms light-move infinite;
+}
+@mixin light($color: rgba(0, 255, 209, 0.67)) {
+  $random-delay: random(2000) + ms;
+  background: $color;
+  filter: blur(150px);
+  //animation: 6000ms light-move infinite $random-delay;
+}
+@mixin lighter($color: rgba(0, 255, 209, 0.67)) {
+  $random-delay: random(2000) + ms;
+  background: $color;
+  filter: blur(180px);
+  //animation: 6000ms light-move infinite;
+}
+
+@mixin bg-animate {
+  background-size: 200% 200%;
+  -webkit-animation: bg-animation 4s ease infinite;
+}
+
+@mixin pseudo() {
+  content: "";
+  position: absolute;
+  border-radius: inherit;
+}
+
+
+@mixin equal($size: 100%) {
+  width: $size;
+  height: $size;
+}
+
+$button-width: 100vw;
+$button-height: 100vh;
+$shadowShift: 6px;
+$shadowBlur: 15px;
+$circleColor: rgb(241, 243, 246);
+@mixin ripple($delay: 0ms) {
+  background-color: transparent;
+  border: 0 solid rgba(241, 243, 246, 0.2);
+  border-radius: 50%;
+  box-shadow: inset $shadowShift $shadowShift $shadowBlur
+  rgba(55 84 170 / 0.2),
+  $shadowShift $shadowShift $shadowBlur
+  rgba(55 84 170 / 0.2),
+  inset $shadowShift * -1 $shadowShift * -1
+  $shadowBlur rgba(255 255 255 / 1),
+  $shadowShift * -1 $shadowShift * -1
+  $shadowBlur rgba(255 255 255 / 1);
+  filter: blur(3px);
+  animation: 8000ms ripple infinite cubic-bezier(0, 0.2, 0.8, 1) $delay;
+  z-index: -1;
+  opacity: 0;
+}
+.wave-ripple:nth-child(1) {
+  @include pseudo;
+  @include ripple();
+}
+.wave-ripple:nth-child(2) {
+  @include pseudo;
+  @include ripple(3000ms);
+}
+.wave-ripple:nth-child(3) {
+  @include pseudo;
+  @include ripple(5000ms);
+}
+@keyframes ripple {
+  $base: 20vw;
+  0% {
+    border-width: 0;
+    top: calc(#{$button-height} * 0.5);
+    left: calc(#{$button-width} * 0.5);
+    width: 0;
+    height: 0;
+    opacity: 1;
+  }
+  100% {
+    border-width: 15px;
+    top: calc(-#{$base} + #{$button-height} * 0.5);
+    left: calc(-#{$base} + #{$button-width} * 0.5);
+    width: 2 * $base;
+    height: 2 * $base;
+    opacity: 0;
+  }
+}
+
+
+
+$tablet-width: 640px;
+$desktop-width: 1080px;
+
+@mixin tablet {
+  @media screen and (min-width: #{$tablet-width}) and (max-width: #{$desktop-width - 1px}) {
+    @content;
+  }
+}
+@mixin mobile {
+  @media screen and (max-width: #{$tablet-width - 1px}) {
+    @content;
+  }
+}
+@mixin not-web {
+  @media screen and (max-width: #{$desktop-width}) {
+    @content;
+  }
+}
+@mixin light-shadow($color: rgba(100 100 100 / 0.2)) {
+  box-shadow: 0 4px 16px 0 $color;
+}
+@mixin shadow($color: rgba(100 100 100 / 0.2)) {
+  box-shadow: 0 0 20px 5px $color;
+}
+@mixin colorful {
+  position: relative;
+  border-radius: 10px;
+  border: none;
+  @include bold-text;
+  background: linear-gradient(102.51deg, #15B2DD 0%, #1ABC72 96.44%);
+  color: black;
+  font-size: 1em;
+  &:after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 70%;
+    top: 50%;
+    left: 0;
+    border-radius: 50%;
+    background: linear-gradient(102.51deg, rgba(21, 178, 221, 0.6) 0%, rgba(26, 188, 114, 0.6) 96.44%);
+    filter: blur(15px);
+  }
+  &:hover {
+    @include bg-animate;
+  }
+  &:disabled {
+    filter: grayscale(0.5);
+  }
+}
+@mixin cta {
+  box-sizing: border-box;
+  padding: 10px 20px;
+  position: relative;
+  border-radius: 10px;
+  border: none;
+  @include normal-text;
+  background: $background-color;
+  color: $font-color;
+  font-size: 0.8rem;
+  .text {
+    position: relative;
+    z-index: 1000;
+  }
+  &:before {
+    @include pseudo;
+    z-index: 20;
+    width: 0;
+    height: 100%;
+    transition: all 200ms;
+    background: linear-gradient(102.51deg, #15B2DD 0%, #1ABC72 96.44%);
+  }
+  &:hover:before {
+    @include equal;
+  }
+}
+@mixin transparent {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  border-radius: 10px;
+  border: none;
+  @include normal-text;
+  background: linear-gradient(270deg, rgba(10, 54, 63, 0.6) 0%, rgba(20, 37, 45, 0.6) 100%);
+  color: $font-color;
+  font-size: 1em;
+  .arrow {
+    width: 24px;
+    height: 19px;
+  }
+  &:hover {
+    @include bg-animate;
+  }
+}
+@mixin smoke-animation($translateY) {
+  -webkit-animation: smoke 8000ms infinite random(7000) + ms;
+  $actualY: calc(-1 * #{$translateY});
+  @-webkit-keyframes smoke {
+    0% {
+      transform: scale(0.8) translateY(0);
+      opacity: 0;
+
+    }
+    10% {
+      transform: scale(0.8) translateY(0);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1.2) translateY($actualY);
+      opacity: 0;
+      width: 20%;
+      height: 30%;
+      right: 10%;
+    }
+  }
+}
+
+@mixin fade {
+  &:after {
+    content: '';
+    position: fixed;
+    height: 100%;
+    width: 15%;
+    left: 0;
+    filter: blur(4px);
+    background: linear-gradient(90deg, rgba(#113C4E, 1) 0%, rgba(#113C4E, 0) 100%);
+  }
+  &:before {
+    content: '';
+    position: fixed;
+    height: 100%;
+    width: 15%;
+    right: 0;
+    filter: blur(4px);
+    background: linear-gradient(270deg, rgba(#113C4E, 1) 0%, rgba(#113C4E, 0) 100%);
+  }
+}
+@mixin cover {
+  overflow: hidden;
+  transition: all 200ms;
+  transition-timing-function: $cubic-negative;
+  &:after {
+    @include pseudo;
+    top: 0;
+    left: 0;
+    -webkit-transform: translateX(-58%) rotate(45deg);
+    -webkit-transition: all 300ms ease-in-out ;
+    width: 100%;
+    height: 100%;
+    background-color: #278e8f;
+  }
+  span {
+    position: relative;
+    z-index: 1;
+  }
+  &:before {
+    @include pseudo;
+    top: 0;
+    left: 0;
+    -webkit-transform: translateX(58%) rotate(45deg);
+    -webkit-transition: all 300ms ease-in-out ;
+    width: 100%;
+    height: 100%;
+    background-color: #278e8f;
+  }
+  &:hover {
+    &:after {
+      -webkit-transform: translateX(0) rotate(0);
+    }
+    &:before {
+      -webkit-transform: translateX(0) rotate(0);
+    }
+  }
+}
