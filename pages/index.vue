@@ -213,75 +213,6 @@ export default {
       };
       reader.readAsDataURL(file);
     },
-    refactorJson() {
-      console.log(this.nfts);
-      let newList = [];
-      this.refactored = [];
-      let details = [];
-      this.nfts.forEach((nft, index) => {
-        let name = this.getValue(nft.attributes, "Name");
-        let characterDetail = this.charactersDetails.find(
-          (detail) => detail.name.toLowerCase() === name.toLowerCase()
-        );
-        let immortal = characterDetail.immortal;
-        let obj = {
-          trait_type: "Immortal",
-          value: immortal,
-        };
-        nft["id"] = index + 1;
-        let heroIndex = this.nfts
-          .filter((nft) => this.getValue(nft.attributes, "Name") === name)
-          .findIndex((n) => n === nft);
-        // console.log(heroIndex);
-        nft.name = `${name}#${heroIndex + 1}`;
-        // nft.name = `${name}#${index + 1}`
-        nft.attributes.push(obj);
-        delete nft["minted"];
-        delete nft["compiler"];
-        let magicalSkill = {
-          trait_type: "Magical Skill",
-          value: characterDetail.magicalSkill,
-        };
-        nft.attributes.push(magicalSkill);
-        let overall = 0;
-        characterDetail.skills.forEach((skill) => {
-          let obj = {
-            trait_type: skill.name,
-            value:
-              Math.floor(Math.random() * (skill.to - skill.from)) + skill.from,
-            display_type: "boost_percentage",
-          };
-          overall += obj.value;
-          nft.attributes.push(obj);
-        });
-        let overallObj = {
-          trait_type: "Overall",
-          value: overall,
-          display_type: "boost_number",
-        };
-        nft.attributes.push(overallObj);
-        let format = "gif";
-        nft[
-          "image"
-        ] = `https://frodo.mypinata.cloud/ipfs/${characterDetail.imageCID}/${nft.edition}.${format}`;
-        let link = `https://foxiverse.io/skidoo/${nft.id}`;
-        nft["external_url"] = link;
-        // console.log(name)
-        let addedLink = `[Details](${link})`;
-        nft["description"] = `${characterDetail.description} ${addedLink}`;
-        // this.nfts.push(nft);
-        // console.log(nft);
-        // this.download(nft, nft.edition);
-        let detail = {
-          name: name,
-          overall: overall,
-        };
-        details.push(detail);
-      });
-      details = details.sort((a, b) => b.overall - a.overall);
-      console.log(details);
-      console.log(this.nfts);
-    },
     async uploadFile() {
       let file = this.toMint.file;
       let data = new FormData();
@@ -301,34 +232,12 @@ export default {
           console.log(uri);
         });
       return uri;
-      // var axios = require('axios');
-      // var FormData = require('form-data');
-      // // var fs = require('fs');
-      // var data = new FormData();
-      // data.append('file', this.toMint.file);
-      // data.append('pinataOptions', '{"cidVersion": 1}');
-      // data.append('pinataMetadata', '{"name": "MyFile", "keyvalues": {"company": "Pinata"}}');
-
-      // var config = {
-      //   method: 'post',
-      //   url: 'https://api.pinata.cloud/pinning/pinFileToIPFS',
-      //   headers: {
-      //     'Authorization': `Bearer ${this.jwt}`,
-      //     // ...data.getHeaders()
-      //   },
-      //   data : data
-      // };
-
-      // const res = await axios(config);
-
-      // console.log(res.data);
     },
     async uploadJson(nft) {
       console.log(nft);
       console.log(this.jwt);
       this.$axios.setToken(this.jwt, "Bearer");
       this.$axios.setHeader("Content-Type", "application/json");
-      // this.$axios.setHeader('path', nft.name + ".json");
       let pin = {
         pinataOptions: {
           cidVersion: 1,
@@ -466,7 +375,7 @@ export default {
             contract.abi,
             address
           );
-          // this.loadAllNFTs();
+          this.loadMyNFTs();
           console.log(this.web3Data.contract);
 
           this.web3Data.contract.methods
@@ -544,6 +453,26 @@ export default {
         }
       }, interval);
     },
+    async loadMyNFTs() {
+                this.myNFTs = [];
+                let data = await this.web3Data.contract.methods.fetchMyNFTs().call({from: this.web3Data.accounts[0]})
+                    .catch(error => {
+                        console.log(error)
+                    });
+                const items = await Promise.all(data.map(async i => {
+                    let item = {
+                        tokenId: parseInt(i.tokenId),
+                        tokenURI: i.uri,
+                        owner: i.owner,
+                    };
+                    // const meta = await axios.get(item.tokenURI);
+                    // item['image'] = meta.data.image;
+                    // item['description'] = meta.data.description;
+                    this.myNFTs.push(item)
+                    return item
+                }));
+                console.log(this.myNFTs)
+            },
     async loadNFTs(from, to) {
       let data = await this.web3Data.contract.methods
         .fetchNFTs(from, to)
@@ -597,7 +526,6 @@ export default {
   },
 };
 </script>
-
 
 <style lang="scss" scoped>
 .main {
