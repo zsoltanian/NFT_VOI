@@ -1,7 +1,6 @@
 export const address = "0x7650D25C04871fe3328842a60355cd432F4a7ED6";
 export const minters = [
-  "0xe8a4ee6ae902FD866Dd5867403Ed96dE7941e294",
-  "0x3bB855088AA5FeC0c993B021b6EFbAd34Ed5C31B",
+  "0x1dfa8Aeb0264d941af76cd4c14d8aAE4F7d92d56",
 ];
 export const owners = [
   "0x50c6571924cb71494fF6b8FED3dA89775D8A2022",

@@ -1,5 +1,5 @@
 <template>
-  <div class="main">
+  <div class="main flex">
     <div
       class="mint flex flex-column"
       v-if="
@@ -9,17 +9,17 @@
         )
       "
     >
+
       <input @change="imageInput" type="file" id="file" placeholder="0" />
 
-      <img class="image" :src="toMint.image" alt="" />
-      <input type="text" v-model="toMint.name" placeholder="Name" />
-
-      <input
-        type="text"
-        v-model="toMint.description"
-        placeholder="Description"
-      />
-      <div class="form-attributes">
+      <div class="flex nft">
+        <img class="image" :src="toMint.image" alt="" />
+        <div class="flex-column">
+          <div class="name">Name: {{toMint.name}}</div>
+          <div class="description">Description: {{toMint.description}}</div>
+          <div class="link">Link: {{toMint.url}}</div>
+        </div>
+        <div class="form-attributes">
         Attributes
         <div
           class="form-attribute flex"
@@ -33,8 +33,19 @@
           <button class="primary-button" v-on:click="removeAttribute(index)">
             -
           </button>
+          </div>
         </div>
+
       </div>
+
+      <input type="text" v-model="toMint.name" placeholder="Name" />
+      <input type="text" v-model="toMint.url" placeholder="NFT Link" />
+      <input
+        type="text"
+        v-model="toMint.description"
+        placeholder="Description"
+      />
+
 
       <select name="types" id="types" v-model="toMint.selectedType">
         <option v-for="type in toMint.types" :value="type">
@@ -118,8 +129,8 @@ export default {
       toMint: {
         file: null,
         image: null,
-        name: "Name",
-        description: "Description",
+        name: "",
+        description: "",
         attributes: [],
         traitType: null,
         traitValue: null,
@@ -127,6 +138,7 @@ export default {
           display: "Normal Text",
           value: "",
         },
+        url: "",
         types: [
           {
             display: "Boost Number",
@@ -179,6 +191,8 @@ export default {
   },
   mounted() {
     this.chromeConnect();
+    console.log(this.jwt)
+    console.log(this.$axios)
   },
   methods: {
     removeAttribute(index) {
@@ -321,11 +335,13 @@ export default {
     },
     async mint() {
       let fileURI = await this.uploadFile();
+      this.toMint.url = `https://google.com/search?q=${this.toMint.name}`
       let obj = {
         name: this.toMint.name,
         image: fileURI,
+        external_url: this.toMint.url,
         attributes: [],
-        description: this.toMint.description,
+        description:  `${this.toMint.description} [Link](${this.toMint.url})`,
       };
       this.toMint.attributes.forEach((attribute) => {
         obj.attributes.push(attribute);
@@ -530,44 +546,58 @@ export default {
 <style lang="scss" scoped>
 .main {
   width: 90vw;
-
+  justify-content: center;
+  align-items: center;
+  flex-direction: column  !important;
   .mint {
     margin: auto;
     flex-direction: column;
-    width: 30%;
+    width: 100%;
     height: 100vh;
     align-self: center;
     justify-content: center;
     align-items: center;
-    .form-attributes {
+    .nft {
       width: 100%;
-      .form-attribute {
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
+      justify-content: space-between;
+      .image {
+        @include equal(300px);
+        border-radius: 10px;
+        margin: 20px 0;
       }
-      .primary-button {
-        width: 40px;
+      .flex-column {
+        width: 30%;
       }
-    }
-    .image {
-      @include equal(300px);
-      border-radius: 10px;
-      margin: 20px 0;
+      .form-attributes {
+        width: 30%;
+        .form-attribute {
+          justify-content: space-between;
+          align-items: center;
+          width: 100%;
+        }
+        .primary-button {
+          width: 40px;
+        }
+      }
     }
     .primary-button {
       @include colorful;
-      width: 150px;
+      width: 300px;
       height: 40px;
       padding: 8px 0;
       /*font-size: 0.8rem;*/
       margin-top: 10px;
     }
+    textarea {
+      width: 300px;
+    }
     input {
       margin: 5px 0;
+      width: 300px!important;
     }
     select {
       margin: 5px 0;
+      width: 300px;
     }
   }
 }
